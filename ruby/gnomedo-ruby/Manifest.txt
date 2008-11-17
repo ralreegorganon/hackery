@@ -1,0 +1,9 @@
+History.txt
+Manifest.txt
+README.rdoc
+Rakefile
+lib/gnomedo-ruby.rb
+spec/gnomedo-ruby_spec.rb
+spec/spec.opts
+spec/spec_helper.rb
+tasks/rspec.rake
