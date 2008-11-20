@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-%w{rubygems json trollop net/http gnomedo-ruby}.each { |lib| require lib}
+%w{rubygems trollop net/http gnomedo-ruby}.each { |lib| require lib}
 class TinyUrlAction
   attr_accessor :action_definition
   
@@ -16,11 +16,11 @@ class TinyUrlAction
     http = Net::HTTP.start("tinyurl.com", 80)
     response = http.get("/api-create.php?url=#{url}")
     tinyurl = response.read_body
-    url_item = GnomeDo::TextItem.new :name => "TinyUrl Item", :description => url, :text => tinyurl
+    url_item = GnomeDo::TextItem.new :text => tinyurl, :description => url
   end
   
   def get_urls_from_json(json)
-    items = JSON.parse(json)
+    items = ActiveSupport::JSON.decode(json)
     items.map { |item| item.select {|k,v| k=="Text" }.flatten[1] }
   end
   
@@ -31,7 +31,7 @@ class TinyUrlAction
   def print_tinyurl_json(json)
     urls = get_urls_from_json(json)
     ensure_urls_are_valid!(urls)
-    print urls.map {|url| get_shortened_url_item(url)}.to_json
+    puts urls.map {|url| get_shortened_url_item(url)}.to_json
   end
   
 end
