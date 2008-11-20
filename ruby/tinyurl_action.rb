@@ -1,15 +1,11 @@
 #!/usr/bin/env ruby
 %w{rubygems trollop net/http gnomedo-ruby}.each { |lib| require lib}
-class TinyUrlAction
-  attr_accessor :action_definition
-  
+class TinyUrlAction < GnomeDo::Action
   def initialize()
-    @action_definition = GnomeDo::Action.new :name => "Send to TinyUrl", 
-                                             :description => "Shortens a URL using TinyUrl"
-  end
-  
-  def print_action_definition
-   puts @action_definition.to_json
+    super :name => "Send to TinyUrl", 
+          :description => "Shortens a URL using TinyUrl",
+          :icon => "text-x-script",
+          :supported_item_types => ["Do.Universe.ITextItem"]
   end
   
   def get_shortened_url_item(url)
@@ -21,7 +17,7 @@ class TinyUrlAction
   
   def get_urls_from_json(json)
     items = ActiveSupport::JSON.decode(json)
-    items.map { |item| item.select {|k,v| k=="Text" }.flatten[1] }
+    urls = items.map { |item| item.select {|k,v| k=="Text" }.flatten[1].gsub(/\n/,"") }
   end
   
   def ensure_urls_are_valid!(urls)
@@ -33,17 +29,18 @@ class TinyUrlAction
     ensure_urls_are_valid!(urls)
     puts urls.map {|url| get_shortened_url_item(url)}.to_json
   end
-  
 end
 
-action = TinyUrlAction.new
+if __FILE__ == $0
+  action = TinyUrlAction.new
 
-opts = Trollop::options do
-  opt :do_action_def, "Print GNOME Do Action definition"
-end
+  opts = Trollop::options do
+    opt :do_action_def, "Print GNOME Do Action definition"
+  end
 
-if opts[:do_action_def]
-  action.print_action_definition
-else
-  action.print_tinyurl_json ARGV[0]
+  if opts[:do_action_def]
+    puts action.to_json
+  else
+    action.print_tinyurl_json ARGV[0]
+  end
 end
