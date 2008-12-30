@@ -1,0 +1,28 @@
+#include "NXCDefs.h"
+// Very simple implementation, everything is placed in the main task.
+task main(){
+   short ultra;
+   
+   SetSensorLowspeed(S4);
+   
+   while(true){
+      ClearScreen();
+      ultra = SensorUS(S4);
+      
+      // range converted manually.
+      // 63 cm is approximately 25 inches.
+      if (ultra > 63){
+         TextOut(0, LCD_LINE7, "Forward");
+         NumOut(0, LCD_LINE8, ultra);
+         OnFwd(OUT_ABC, 100);
+      } else {
+          TextOut(0, LCD_LINE7, "Turn!");
+         NumOut(0, LCD_LINE8, ultra);      
+         OnRev(OUT_ABC, 100);
+      }
+      
+      // If we try to check the ultrasonic sensor too often, 
+      // it will give us incorrect values.
+      Wait(20);
+   }
+}
