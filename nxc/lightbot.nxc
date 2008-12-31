@@ -1,0 +1,26 @@
+#include "NXCDefs.h"
+task main() {
+	short light;
+	short distance;
+	SetSensorLight(S3);
+	SetSensorLowspeed(S4);
+	
+	while(true) {
+		light = SensorScaled(S3);
+		distance = SensorUS(S4);
+		
+		NumOut(0, LCD_LINE8, light, true);
+
+		if (light < 50) {
+			if (distance > 63){
+		         OnFwd(OUT_ABC, 100);
+		      } else {   
+		         OnRev(OUT_ABC, 100);
+		      }
+		} else {    
+			Coast(OUT_ABC);
+		}
+		
+		Wait(20);
+	}
+}
